@@ -1,0 +1,24 @@
+name: Check PR Sync with main Branch
+
+on:
+  pull_request:
+    branches:
+      - main
+    types: [opened, synchronize, reopened] # Trigger on PR open, sync, or reopen events
+
+jobs:
+  check-sync:
+    if: ${{ github.event.pull_request.base.ref == 'main' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Fetch main branch
+        run: git fetch origin main:main
+
+      - name: Check if PR is in sync with main branch
+        run: |
+          git fetch origin ${{ github.event.pull_request.head.ref }}:${{ github.event.pull_request.head.ref }}
+          git merge-base --is-ancestor main ${{ github.event.pull_request.head.ref }} || { echo "::error::PR is not in sync with the main branch"; exit 1; }
