@@ -1,0 +1,26 @@
+# General
+# ------------------------------------------------------------------------------
+USE_DOCKER=
+IPYTHONDIR=
+# Redis
+
+# ------------------------------------------------------------------------------
+REDIS_URL=
+
+# Celery
+# ------------------------------------------------------------------------------
+CELERY_BROKER_URL=
+
+# Flower
+CELERY_FLOWER_USER=
+CELERY_FLOWER_PASSWORD=
+
+
+#Email
+EMAIL_BACKEND=
+EMAIL_HOST=
+EMAIL_PORT=
+EMAIL_USE_TLS=
+EMAIL_HOST_USER=
+EMAIL_HOST_PASSWORD=
+EMAIL_SENDER=
