@@ -7,9 +7,12 @@ from django.urls import include
 from django.urls import path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
-from drf_spectacular.views import SpectacularAPIView
-from drf_spectacular.views import SpectacularSwaggerView
 from rest_framework.authtoken.views import obtain_auth_token
+from drf_spectacular.views import (
+    SpectacularAPIView,
+    SpectacularRedocView,
+    SpectacularSwaggerView,
+)
 
 urlpatterns = [
     path("", TemplateView.as_view(template_name="pages/home.html"), name="home"),
@@ -21,7 +24,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     # User management
-    path("users/", include("google_meet_django.users.urls", namespace="users")),
+    # path("users/", include("google_meet_django.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
     # Your stuff: custom urls includes go here
     # ...
@@ -35,7 +38,7 @@ if settings.DEBUG:
 # API URLS
 urlpatterns += [
     # API base url
-    # path("api/", include("config.api_router")),
+    path("api/", include("config.api_router")),
     # DRF auth token
     path("api/auth-token/", obtain_auth_token),
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
@@ -44,6 +47,11 @@ urlpatterns += [
         SpectacularSwaggerView.as_view(url_name="api-schema"),
         name="api-docs",
     ),
+    path(
+        "api/redocs/",
+        SpectacularRedocView.as_view(url_name="api-schema"),
+        name="api-redocs",
+    )
 ]
 
 if settings.DEBUG:

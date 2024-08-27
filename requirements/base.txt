@@ -24,3 +24,8 @@ django-cors-headers==4.4.0  # https://github.com/adamchainz/django-cors-headers
 # DRF-spectacular for api documentation
 drf-spectacular==0.27.2  # https://github.com/tfranzel/drf-spectacular
 djangorestframework-simplejwt==5.3.1
+
+#Google API
+google-api-python-client==2.142.0
+google-auth-httplib2==0.2.0
+google-auth-oauthlib==1.2.1
