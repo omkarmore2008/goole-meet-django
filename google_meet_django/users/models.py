@@ -2,7 +2,9 @@
 from typing import ClassVar
 
 from django.contrib.auth.models import AbstractUser
-from django.db.models import CharField
+from django.db import models
+from django.db.models import (
+    CharField, DateTimeField, DurationField, EmailField, ForeignKey, JSONField, ManyToManyField, URLField)
 from django.db.models import EmailField
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
@@ -17,12 +19,11 @@ class User(AbstractUser):
     check forms.SignupForm and forms.SocialSignupForms accordingly.
     """
 
-    # First and last name do not cover name patterns around the globe
     name = CharField(_("Name of User"), blank=True, max_length=255)
-    first_name = None  # type: ignore[assignment]
-    last_name = None  # type: ignore[assignment]
+    first_name = None
+    last_name = None
     email = EmailField(_("email address"), unique=True)
-    username = None  # type: ignore[assignment]
+    username = None
 
     USERNAME_FIELD = "email"
     REQUIRED_FIELDS = []
@@ -37,3 +38,18 @@ class User(AbstractUser):
 
         """
         return reverse("users:detail", kwargs={"pk": self.id})
+
+
+class ServiceToken(models.Model):
+    provider = CharField(_("Name of Serice Provider"), max_length=255)
+    user = ForeignKey(User, related_name="serivce_token", on_delete=models.CASCADE)
+    token = JSONField(_("Token"), default=dict)
+
+
+class Session(models.Model):
+    name = CharField(_("Name of Session"), max_length=255)
+    attendee = ManyToManyField(User)
+    start_time = DateTimeField(_("Start Time"))
+    end_time = DateTimeField(_("End Time"))
+    session_url = URLField(_("Session URL"), null=True, blank=True)
+    session_time = DurationField(_("Session Duration"), null=True, blank=True)
