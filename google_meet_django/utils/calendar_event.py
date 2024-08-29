@@ -1,6 +1,5 @@
 import datetime
-import json
-import os
+import uuid
 
 from django.conf import settings
 
@@ -9,7 +8,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-from google_meet_django.users.models import Session, ServiceToken
+from google_meet_django.users.models import ServiceToken
 
 
 
@@ -66,29 +65,27 @@ def fetch_calendar_events(user_email):
         return None
 
 
-def create_event(session_id):
+def create_event(session_data):
     try:
-        session = Session.objects.get(id=session_id)
-        creds = generate_token(user_email=session.host_user.email)
-        print(creds)
+        creds = generate_token(user_email=session_data["host_user"].email)
         if creds:
             service = build("calendar", "v3", credentials=creds)
             event = {
-                "summary": session.name,
+                "summary": session_data["name"],
                 "start": {
-                    "dateTime": session.start_time.isoformat(),
+                    "dateTime": session_data["start_time"].isoformat(),
                     "timeZone": "UTC",
                 },
                 "end": {
-                    "dateTime": session.end_time.isoformat(),
+                    "dateTime": session_data["end_time"].isoformat(),
                     "timeZone": "UTC",
                 },
                 "attendees": [
-                    {"email": email} for email in session.attendee.all().values_list("email")
+                    {"email": attendee.email} for attendee in session_data["attendee"]
                 ],
             }
             event = service.events().insert(calendarId="primary", body=event).execute()
-            return True
+            return event
         return None
     except Exception as e:
         print("Error:", str(e))

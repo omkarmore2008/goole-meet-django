@@ -55,5 +55,6 @@ class Session(models.Model):
     host_user = ForeignKey(User, related_name="session_host_user", on_delete=models.CASCADE)
     start_time = DateTimeField(_("Start Time"))
     end_time = DateTimeField(_("End Time"))
-    session_url = URLField(_("Session URL"), null=True, blank=True)
+    session_data = JSONField(_("Session Data"), null=True, blank=True)
     session_time = DurationField(_("Session Duration"), null=True, blank=True)
+    session_id = CharField(_("Session Id"), unique=True, blank=True, null=True)

@@ -1,12 +1,7 @@
 import base64
 import json
 
-from collections.abc import Sequence
-from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import QuerySet
-from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django.shortcuts import get_object_or_404
 from django.conf import settings
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated, AllowAny
@@ -14,7 +9,7 @@ from google_meet_django.users.models import User, ServiceToken, Session
 from google_meet_django.users.api.serializers import UserSerializer, ServiceTokenSerializer, SessionSerializer
 from rest_framework.response import Response
 from rest_framework_simplejwt.views import TokenRefreshView
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, logout
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.decorators import action
@@ -40,7 +35,7 @@ class LoginLogoutView(viewsets.ViewSet, TokenRefreshView):
         if not email or not password:
             return Response(
                 {
-                    "error": "Your authentication information is incorrect. Please try again.",
+                    "error": "Please provide required data.",
                 },
                 status=status.HTTP_400_BAD_REQUEST,
             )
@@ -126,7 +121,7 @@ class ServiceTokensAPIView(viewsets.ModelViewSet):
     pagination_class = PageNumberPagination
 
 
-class SessionsAPIView(LoginRequiredMixin, viewsets.ModelViewSet):
+class SessionsAPIView(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
     permission_classes = [IsAuthenticated]
@@ -135,10 +130,6 @@ class SessionsAPIView(LoginRequiredMixin, viewsets.ModelViewSet):
 
     def create(self, request):
         request_data = request.data.copy()
-        try:
-            service_token = ServiceToken.objects.get(user=request_data.get("host_user"), provider=settings.SERVICE_PROVIDER)
-        except ServiceToken.DoesNotExist:
-            return Response({"error": "Please provide consent for google calendar"}, status=status.HTTP_403_FORBIDDEN)
         serializer = self.get_serializer(data=request_data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
