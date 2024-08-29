@@ -4,6 +4,7 @@
 from pathlib import Path
 
 import environ
+import json
 from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve(strict=True).parent.parent.parent
@@ -370,3 +371,8 @@ SIMPLE_JWT = {
     "USER_ID_FIELD": "id",
     "USER_ID_CLAIM": "id",
 }
+
+# ----------------------------------------------------------------------------------
+SERVICE_PROVIDER = env("SERVICE_PROVIDER")
+SCOPES = json.loads(env("SCOPES"))
+CREDS_JSON = json.loads(env("CREDS_JSON"))
